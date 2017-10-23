@@ -1,4 +1,5 @@
 import collections
+import contextdecorator as cd
 import six
 import threading
 
@@ -28,18 +29,13 @@ class LocalConfig(threading.local):
 
 config = LocalConfig()
 
-def with_config(conf, f=None):
-    def decorator(f):
-        def decorated(*a, **k):
-            config.push(conf)
-            try:
-                return f(*a, **k)
-            finally:
-                config.pop()
-        return decorated
-    if f is not None:
-        return decorator(f)
-    return decorator
+@cd.contextmanager
+def with_config(conf):
+    config.push(conf)
+    try:
+        yield config
+    finally:
+        config.pop()
 
 def use_config(config):
     config.push(config)
