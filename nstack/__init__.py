@@ -27,6 +27,13 @@ class LocalConfig(threading.local):
     def get(self, name, default=None):
         return self.peek().get(name, default)
 
+    def __contains__(self, name):
+        try:
+            self[name]
+        except LookupError:
+            return False
+        return True
+
 config = LocalConfig()
 
 @cd.contextmanager
