@@ -1,9 +1,21 @@
 import collections
 import contextdecorator as cd
+from events import Events
+import logging
 import six
 import threading
 
+events = Events(("send_event"))
 modules = {}
+
+def _loggingHandler(name, data):
+    logging.getLogger("nstack.events").info("%s: %r", name, data)
+
+events.send_event += _loggingHandler
+
+def send_event(name, data):
+    events.send_event(name, data)
+
 
 class LocalConfig(threading.local):
     def __init__(self):
